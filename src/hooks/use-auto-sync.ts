@@ -17,7 +17,7 @@ export function useAutoSync() {
       return;
     }
 
-    let intervalId: NodeJS.Timeout;
+    let intervalId: ReturnType<typeof setInterval>;
 
     async function checkAndSync() {
       // Prevent multiple simultaneous sync operations

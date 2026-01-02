@@ -53,7 +53,7 @@ export default function RootLayout() {
   useEffect(() => {
     // Initialize SQLite database on app start (native only)
     if (Platform.OS !== 'web') {
-      initDB().catch((error) => {
+      initDB().catch((error: any) => {
         console.error('Failed to initialize database:', error);
       });
     }

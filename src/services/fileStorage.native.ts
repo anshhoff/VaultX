@@ -4,6 +4,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 export interface SavedDocument {
   localPath: string;
   originalName: string;
+  fileData?: ArrayBuffer; // Optional for native compatibility
 }
 
 const DOCUMENTS_DIR = `${FileSystem.documentDirectory}documents/`;
@@ -74,4 +75,17 @@ export async function pickAndSaveDocument(): Promise<SavedDocument | null> {
     console.error('Error picking and saving document:', error);
     throw error;
   }
+}
+
+/**
+ * Upload document web - not available on native
+ * This stub exists for type compatibility
+ */
+export async function uploadDocumentWeb(
+  fileData: ArrayBuffer,
+  userId: string,
+  documentId: string,
+  fileName: string
+): Promise<string> {
+  throw new Error('uploadDocumentWeb is only available on web platform');
 }

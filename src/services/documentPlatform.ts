@@ -58,7 +58,7 @@ export async function getDocuments(): Promise<UnifiedDocument[]> {
           const cloudDocs = await getCloudDocuments(session.user.id);
           
           // Create a map of local document IDs
-          const localDocIds = new Set(localDocs.map(doc => doc.id));
+          const localDocIds = new Set(localDocs.map((doc: LocalDocument) => doc.id));
           
           // Add cloud documents that don't exist locally
           const cloudOnlyDocs = cloudDocs
