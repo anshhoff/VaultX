@@ -1,5 +1,8 @@
 import { pickAndSaveDocument } from '@/services/fileStorage';
-import { insertDocument, LocalDocument } from '@/storage/localDB';
+import { insertDocument, LocalDocument, updateDocumentSyncStatus } from '@/storage/localDB';
+import { uploadDocumentToCloud } from '@/services/cloudStorage';
+import { insertCloudDocument } from '@/services/cloudDocuments';
+import { supabase } from '@/services/supabase';
 
 /**
  * Generate a UUID v4
@@ -46,5 +49,57 @@ export async function addDocument(category: string): Promise<LocalDocument | nul
   } catch (error) {
     console.error('Error adding document:', error);
     throw error;
+  }
+}
+
+/**
+ * Sync a document to cloud storage (Supabase)
+ * @param document - The document to sync
+ * @returns true if synced successfully, false otherwise
+ */
+export async function syncDocument(document: LocalDocument): Promise<boolean> {
+  // Skip if already synced
+  if (document.synced === 1) {
+    console.log('Document already synced:', document.id);
+    return true;
+  }
+
+  try {
+    // Get current user
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session?.user) {
+      console.log('No active session, skipping sync');
+      return false;
+    }
+
+    const userId = session.user.id;
+
+    // Upload file to Supabase Storage
+    const { storagePath } = await uploadDocumentToCloud({
+      localFilePath: document.local_path,
+      userId,
+      documentId: document.id,
+    });
+
+    // Save metadata to Supabase DB
+    await insertCloudDocument({
+      id: document.id,
+      userId,
+      name: document.name,
+      category: document.category,
+      storagePath,
+      createdAt: document.created_at,
+    });
+
+    // Update local record to mark as synced
+    await updateDocumentSyncStatus(document.id, 1);
+
+    console.log('Document synced successfully:', document.id);
+    return true;
+  } catch (error) {
+    // Fail gracefully - don't throw error, leave synced = 0
+    console.log('Failed to sync document (offline or error):', error);
+    return false;
   }
 }

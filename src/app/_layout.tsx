@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useAutoSync } from '@/hooks/use-auto-sync';
 import { Colors } from '@/constants/theme';
 import { initDB } from '@/storage/localDB';
 
@@ -11,6 +12,9 @@ function RootLayoutNav() {
   const segments = useSegments();
   const router = useRouter();
   const colorScheme = useColorScheme();
+
+  // Enable automatic document sync when network is available
+  useAutoSync();
 
   useEffect(() => {
     if (loading) return;

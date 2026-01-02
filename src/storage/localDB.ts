@@ -89,6 +89,21 @@ export async function getAllDocuments(): Promise<LocalDocument[]> {
 }
 
 /**
+ * Get all unsynced documents from the database
+ */
+export async function getUnsyncedDocuments(): Promise<LocalDocument[]> {
+  await ensureDBInitialized();
+
+  try {
+    const result = await db!.getAllAsync<LocalDocument>('SELECT * FROM documents WHERE synced = 0 ORDER BY created_at ASC');
+    return result;
+  } catch (error) {
+    console.error('Error getting unsynced documents:', error);
+    throw error;
+  }
+}
+
+/**
  * Delete a document from the database
  */
 export async function deleteDocument(id: string): Promise<void> {
@@ -98,6 +113,20 @@ export async function deleteDocument(id: string): Promise<void> {
     await db!.runAsync('DELETE FROM documents WHERE id = ?', [id]);
   } catch (error) {
     console.error('Error deleting document:', error);
+    throw error;
+  }
+}
+
+/**
+ * Update the sync status of a document
+ */
+export async function updateDocumentSyncStatus(id: string, synced: number): Promise<void> {
+  await ensureDBInitialized();
+
+  try {
+    await db!.runAsync('UPDATE documents SET synced = ? WHERE id = ?', [synced, id]);
+  } catch (error) {
+    console.error('Error updating document sync status:', error);
     throw error;
   }
 }
