@@ -1,65 +1,152 @@
-# Welcome to your Expo app 👋
+# VaultX
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+VaultX is a secure and user-friendly document management application designed to help users store, organize, and access their important documents seamlessly across devices. Built with modern technologies, VaultX ensures a smooth and intuitive user experience while maintaining top-notch security.
 
-## Get started
+---
 
-To start the app, in your terminal run:
+## Features
 
-```bash
-npm run start
+### Core Features
+- **Document Storage**: Upload and store documents securely in the cloud.
+- **Category Management**: Organize documents into categories like Passport, License, Certificate, etc.
+- **Dark Mode**: Toggle between light and dark themes for better accessibility.
+- **Cross-Platform Support**: Works seamlessly on both web and mobile platforms.
+- **Offline Access**: Access locally stored documents without an internet connection.
+
+### Additional Features
+- **Document Syncing**: Automatically sync documents across devices.
+- **Secure Authentication**: Powered by Supabase for secure user authentication.
+- **File Preview**: Preview documents directly within the app.
+- **Customizable Themes**: Switch between light and dark modes.
+- **Responsive Design**: Optimized for various screen sizes.
+
+---
+
+## Tech Stack
+
+### Frontend
+- **React Native**: For building cross-platform mobile applications.
+- **Expo**: Simplifies development and deployment.
+- **TypeScript**: Ensures type safety and better developer experience.
+
+### Backend
+- **Supabase**: Provides authentication, database, and storage services.
+- **SQLite**: Local database for offline access.
+
+### Tools & Libraries
+- **React Navigation**: For seamless navigation between screens.
+- **Expo File System**: Handles file storage and management.
+- **React Native Vector Icons**: For beautiful and consistent icons.
+
+---
+
+## Folder Structure
+
+```plaintext
+VaultX-qng9Eb/
+├── app/                # Application screens and layouts
+│   ├── (tabs)/         # Tab-based navigation screens
+│   ├── (auth)/         # Authentication screens
+├── components/         # Reusable UI components
+├── constants/          # Theme and configuration constants
+├── hooks/              # Custom React hooks
+├── services/           # API and platform-specific services
+├── storage/            # Local database and storage logic
+├── assets/             # Static assets like images
+├── scripts/            # Utility scripts
+├── package.json        # Project dependencies and scripts
+├── tsconfig.json       # TypeScript configuration
+└── README.md           # Project documentation
 ```
 
-In the output, you'll find options to open the app in:
+---
 
-- [a development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [an Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [an iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Installation
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### Prerequisites
+- Node.js (v16 or higher)
+- npm or yarn
+- Expo CLI
 
-## Workflows
+### Steps
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-repo/vaultx.git
+   ```
+2. Navigate to the project directory:
+   ```bash
+   cd vaultx
+   ```
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+4. Start the development server:
+   ```bash
+   npx expo start
+   ```
 
-This project is configured to use [EAS Workflows](https://docs.expo.dev/eas/workflows/get-started/) to automate some development and release processes. These commands are set up in [`package.json`](./package.json) and can be run using NPM scripts in your terminal.
+---
 
-### Previews
+## Usage
 
-Run `npm run draft` to [publish a preview update](https://docs.expo.dev/eas/workflows/examples/publish-preview-update/) of your project, which can be viewed in Expo Go or in a development build.
+1. **Sign Up / Log In**: Create an account or log in using your credentials.
+2. **Add Documents**: Navigate to the "Add Document" tab, select a category, and upload your document.
+3. **View Documents**: Browse your documents in the "Documents" tab.
+4. **Settings**: Toggle between light and dark modes, and manage your preferences.
 
-### Development Builds
+---
 
-Run `npm run development-builds` to [create a development build](https://docs.expo.dev/eas/workflows/examples/create-development-builds/). Note - you'll need to follow the [Prerequisites](https://docs.expo.dev/eas/workflows/examples/create-development-builds/#prerequisites) to ensure you have the correct emulator setup on your machine.
+## Screenshots
 
-### Production Deployments
+### Light Mode
+![Light Mode Screenshot](assets/images/light-mode.png)
 
-Run `npm run deploy` to [deploy to production](https://docs.expo.dev/eas/workflows/examples/deploy-to-production/). Note - you'll need to follow the [Prerequisites](https://docs.expo.dev/eas/workflows/examples/deploy-to-production/#prerequisites) to ensure you're set up to submit to the Apple and Google stores.
+### Dark Mode
+![Dark Mode Screenshot](assets/images/dark-mode.png)
 
-## Hosting
+---
 
-Expo offers hosting for websites and API functions via EAS Hosting. See the [Getting Started](https://docs.expo.dev/eas/hosting/get-started/) guide to learn more.
+## Contributing
 
+We welcome contributions! To contribute:
+1. Fork the repository.
+2. Create a new branch:
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+3. Commit your changes:
+   ```bash
+   git commit -m "Add your message here"
+   ```
+4. Push to the branch:
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+5. Open a pull request.
 
-## Get a fresh project
+---
 
-When you're ready, run:
+## License
 
-```bash
-npm run reset-project
-```
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+## Contact
 
-To learn more about developing your project with Expo, look at the following resources:
+For any inquiries or support, please contact:
+- **Email**: support@vaultx.com
+- **Website**: [www.vaultx.com](https://www.vaultx.com)
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+---
 
-## Join the community
+## Acknowledgments
 
-Join our community of developers creating universal apps.
+- **Expo**: For simplifying React Native development.
+- **Supabase**: For providing an amazing backend-as-a-service platform.
+- **React Native Community**: For the incredible open-source libraries.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+---
+
+Thank you for using VaultX! 🚀
