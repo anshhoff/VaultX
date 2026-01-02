@@ -1,15 +1,22 @@
 import { useEffect, useRef } from 'react';
+import { Platform } from 'react-native';
 import * as Network from 'expo-network';
 import { getUnsyncedDocuments } from '@/storage/localDB';
 import { syncDocument } from '@/features/documents/documentService';
 
 /**
  * Hook to automatically sync unsynced documents when network becomes available
+ * Only runs on native platforms (iOS/Android)
  */
 export function useAutoSync() {
   const isSyncingRef = useRef(false);
 
   useEffect(() => {
+    // Skip on web - web always uses cloud documents
+    if (Platform.OS === 'web') {
+      return;
+    }
+
     let intervalId: NodeJS.Timeout;
 
     async function checkAndSync() {

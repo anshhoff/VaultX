@@ -1,6 +1,6 @@
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { useEffect } from 'react';
-import { ActivityIndicator, View, StyleSheet } from 'react-native';
+import { ActivityIndicator, View, StyleSheet, Platform } from 'react-native';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAutoSync } from '@/hooks/use-auto-sync';
@@ -51,10 +51,12 @@ function RootLayoutNav() {
 
 export default function RootLayout() {
   useEffect(() => {
-    // Initialize SQLite database on app start
-    initDB().catch((error) => {
-      console.error('Failed to initialize database:', error);
-    });
+    // Initialize SQLite database on app start (native only)
+    if (Platform.OS !== 'web') {
+      initDB().catch((error) => {
+        console.error('Failed to initialize database:', error);
+      });
+    }
   }, []);
 
   return (

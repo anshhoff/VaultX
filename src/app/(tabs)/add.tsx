@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StyleSheet, View, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Alert, ScrollView, Platform } from 'react-native';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { Colors } from '@/constants/theme';
@@ -100,6 +100,16 @@ const styles = StyleSheet.create({
   content: {
     padding: 20,
     paddingTop: 40,
+  },
+  webNotice: {
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 20,
+  },
+  webNoticeText: {
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: 'center',
   },
   title: {
     textAlign: 'center',

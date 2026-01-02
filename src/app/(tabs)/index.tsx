@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { StyleSheet, View, FlatList, ActivityIndicator, TouchableOpacity, Alert, RefreshControl } from 'react-native';
+import { StyleSheet, View, FlatList, ActivityIndicator, TouchableOpacity, Alert, RefreshControl, Platform, Linking } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import * as FileSystem from 'expo-file-system/legacy';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -7,11 +7,14 @@ import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { getAllDocuments, LocalDocument, deleteDocument } from '@/storage/localDB';
+import { deleteDocument } from '@/storage/localDB';
 import { openDocument } from '@/services/documentOpener';
+import { getDocuments, UnifiedDocument, getDocumentUrl } from '@/services/documentPlatform';
+import { deleteCloudDocument } from '@/services/cloudDocuments';
+import { supabase } from '@/services/supabase';
 
 export default function HomeScreen() {
-  const [documents, setDocuments] = useState<LocalDocument[]>([]);
+  const [documents, setDocuments] = useState<UnifiedDocument[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const colorScheme = useColorScheme();
@@ -25,7 +28,7 @@ export default function HomeScreen() {
   async function loadDocuments() {
     setLoading(true);
     try {
-      const docs = await getAllDocuments();
+      const docs = await getDocuments();
       setDocuments(docs);
     } catch (error) {
       console.error('Error loading documents:', error);
@@ -37,7 +40,7 @@ export default function HomeScreen() {
   async function handleRefresh() {
     setRefreshing(true);
     try {
-      const docs = await getAllDocuments();
+      const docs = await getDocuments();
       setDocuments(docs);
     } catch (error) {
       console.error('Error refreshing documents:', error);
@@ -46,15 +49,22 @@ export default function HomeScreen() {
     }
   }
 
-  async function handleOpenDocument(document: LocalDocument) {
+  async function handleOpenDocument(document: UnifiedDocument) {
     try {
-      await openDocument(document.local_path);
+      if (Platform.OS === 'web') {
+        // On web, open the cloud storage URL
+        const signedUrl = await getDocumentUrl(document.local_path);
+        await Linking.openURL(signedUrl);
+      } else {
+        // On native, open local file
+        await openDocument(document.local_path);
+      }
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Failed to open document');
     }
   }
 
-  async function handleDeleteDocument(document: LocalDocument) {
+  async function handleDeleteDocument(document: UnifiedDocument) {
     Alert.alert(
       'Delete Document',
       `Are you sure you want to delete "${document.name}"?\n\nThis action cannot be undone.`,
@@ -68,14 +78,24 @@ export default function HomeScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              // Delete from database
-              await deleteDocument(document.id);
-              
-              // Delete local file
-              try {
-                await FileSystem.deleteAsync(document.local_path);
-              } catch (fileError) {
-                console.warn('Could not delete local file:', fileError);
+              if (Platform.OS === 'web') {
+                // On web, delete from cloud
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session?.user) {
+                  await deleteCloudDocument(document.id, session.user.id);
+                  // Delete from storage
+                  await supabase.storage.from('documents').remove([document.local_path]);
+                }
+              } else {
+                // On native, delete from local database
+                await deleteDocument(document.id);
+                
+                // Delete local file
+                try {
+                  await FileSystem.deleteAsync(document.local_path);
+                } catch (fileError) {
+                  console.warn('Could not delete local file:', fileError);
+                }
               }
               
               // Reload documents list
@@ -117,7 +137,7 @@ export default function HomeScreen() {
     }
   }
 
-  function renderDocument({ item }: { item: LocalDocument }) {
+  function renderDocument({ item }: { item: UnifiedDocument }) {
     const fileIcon = getFileIcon(item.name);
 
     return (

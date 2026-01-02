@@ -1,4 +1,5 @@
-import { pickAndSaveDocument } from '@/services/fileStorage';
+import { Platform } from 'react-native';
+import { pickAndSaveDocument, uploadDocumentWeb } from '@/services/fileStorage';
 import { insertDocument, LocalDocument, updateDocumentSyncStatus } from '@/storage/localDB';
 import { uploadDocumentToCloud } from '@/services/cloudStorage';
 import { insertCloudDocument } from '@/services/cloudDocuments';
@@ -30,22 +31,65 @@ export async function addDocument(category: string): Promise<LocalDocument | nul
       return null;
     }
 
-    // Create document record
-    const document: LocalDocument = {
-      id: generateUUID(),
-      name: savedFile.originalName,
-      category,
-      local_path: savedFile.localPath,
-      created_at: Date.now(),
-      synced: 0,
-    };
+    const documentId = generateUUID();
 
-    // Save to local database
-    await insertDocument(document);
+    if (Platform.OS === 'web') {
+      // Web: Upload directly to Supabase
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session?.user) {
+        throw new Error('Not authenticated');
+      }
 
-    console.log('Document added successfully:', document.id);
+      const userId = session.user.id;
 
-    return document;
+      // Upload file to Supabase Storage
+      const storagePath = await uploadDocumentWeb(
+        savedFile.fileData!,
+        userId,
+        documentId,
+        savedFile.originalName
+      );
+
+      // Save metadata to Supabase DB
+      await insertCloudDocument({
+        id: documentId,
+        userId,
+        name: savedFile.originalName,
+        category,
+        storagePath,
+        createdAt: Date.now(),
+      });
+
+      console.log('Document uploaded to cloud successfully:', documentId);
+
+      // Return a document object for consistency
+      return {
+        id: documentId,
+        name: savedFile.originalName,
+        category,
+        local_path: storagePath,
+        created_at: Date.now(),
+        synced: 1,
+      };
+    } else {
+      // Native: Save to local database
+      const document: LocalDocument = {
+        id: documentId,
+        name: savedFile.originalName,
+        category,
+        local_path: savedFile.localPath,
+        created_at: Date.now(),
+        synced: 0,
+      };
+
+      // Save to local database
+      await insertDocument(document);
+
+      console.log('Document added successfully:', document.id);
+
+      return document;
+    }
   } catch (error) {
     console.error('Error adding document:', error);
     throw error;
@@ -58,6 +102,11 @@ export async function addDocument(category: string): Promise<LocalDocument | nul
  * @returns true if synced successfully, false otherwise
  */
 export async function syncDocument(document: LocalDocument): Promise<boolean> {
+  // Skip on web - web documents are always synced
+  if (Platform.OS === 'web') {
+    return true;
+  }
+
   // Skip if already synced
   if (document.synced === 1) {
     console.log('Document already synced:', document.id);
