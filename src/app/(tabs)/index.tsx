@@ -280,29 +280,33 @@ const styles = StyleSheet.create({
   },
   title: {
     marginBottom: 16,
+    fontSize: 20, // Increased for better hierarchy
+    fontWeight: '700',
   },
   subtitle: {
     textAlign: 'center',
-    opacity: 0.7,
+    opacity: 0.8, // Improved readability
+    fontSize: 14, // Slightly larger for better visibility
   },
   listContent: {
-    padding: 16,
+    padding: 20,
+    paddingBottom: 32,
   },
   documentCard: {
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
+    padding: 20,
+    borderRadius: 16,
+    marginBottom: 16,
     borderWidth: 1,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
   },
   documentHeader: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 12,
+    gap: 16,
   },
   documentContent: {
     flex: 1,
@@ -311,39 +315,46 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    marginBottom: 12,
   },
   documentName: {
-    fontSize: 16,
+    fontSize: 18, // Increased for prominence
+    fontWeight: '700', // Stronger emphasis
     flex: 1,
-    marginRight: 8,
+    marginRight: 12,
+    lineHeight: 24, // Adjusted for better spacing
   },
   syncBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
   },
   syncText: {
-    fontSize: 10,
-    fontWeight: '600',
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 0.3,
   },
   documentInfo: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginTop: 4,
   },
   categoryBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 14,
   },
   categoryText: {
-    fontSize: 12,
+    fontSize: 12, // Slightly smaller for muted effect
     fontWeight: '600',
     textTransform: 'capitalize',
+    letterSpacing: 0.2,
+    opacity: 0.7, // Muted appearance
   },
   dateText: {
-    fontSize: 12,
-    opacity: 0.6,
+    fontSize: 12, // Consistent with category
+    opacity: 0.6, // Muted appearance
+    fontWeight: '500',
   },
 });

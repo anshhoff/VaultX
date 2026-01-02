@@ -11,6 +11,10 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: true,
+        headerStyle: {
+          backgroundColor: Colors[colorScheme ?? 'light'].background, // Dynamic background
+        },
+        headerTintColor: Colors[colorScheme ?? 'light'].text, // Dynamic text color
         tabBarStyle: {
           backgroundColor: Colors[colorScheme ?? 'light'].background,
         },

@@ -98,8 +98,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
+    flex: 1, // Center content vertically
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: 20,
-    paddingTop: 40,
   },
   webNotice: {
     padding: 16,
@@ -113,18 +115,23 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: 16, // Increased spacing for clarity
+    fontSize: 22, // Clear heading
+    fontWeight: '700',
   },
   subtitle: {
     textAlign: 'center',
-    opacity: 0.7,
-    marginBottom: 40,
+    opacity: 0.8, // Improved readability
+    marginBottom: 32, // Better spacing
+    fontSize: 14,
   },
   section: {
     marginBottom: 32,
   },
   sectionTitle: {
-    marginBottom: 16,
+    marginBottom: 12, // Reduced spacing for compactness
+    fontSize: 16,
+    fontWeight: '600',
   },
   categoryGrid: {
     flexDirection: 'row',
@@ -132,11 +139,11 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   categoryButton: {
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 8,
+    paddingHorizontal: 24, // More padding for distinction
+    paddingVertical: 14,
+    borderRadius: 12, // Softer corners
     borderWidth: 1,
-    minWidth: 100,
+    minWidth: 120, // Larger buttons
     alignItems: 'center',
   },
   categoryText: {
@@ -144,17 +151,17 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   pickButton: {
-    height: 50,
-    borderRadius: 8,
+    height: 56, // Larger button for prominence
+    borderRadius: 12, // Softer corners
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 40, // More spacing for emphasis
   },
   buttonDisabled: {
     opacity: 0.6,
   },
   pickButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 18, // Larger text for prominence
+    fontWeight: '700',
   },
 });

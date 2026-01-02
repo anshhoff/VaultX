@@ -1,13 +1,21 @@
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Switch } from 'react-native';
+import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useColorScheme, setColorScheme } from '@/hooks/use-color-scheme';
 
 export default function SettingsScreen() {
   const { signOut } = useAuth();
   const colorScheme = useColorScheme();
+  const [isDarkMode, setIsDarkMode] = useState(colorScheme === 'dark');
+
+  const toggleTheme = () => {
+    const newScheme = isDarkMode ? 'light' : 'dark';
+    setColorScheme(newScheme);
+    setIsDarkMode(!isDarkMode);
+  };
 
   return (
     <ThemedView style={styles.container}>
@@ -18,7 +26,12 @@ export default function SettingsScreen() {
         <ThemedText style={styles.subtitle}>
           Manage your app preferences
         </ThemedText>
-        
+
+        <View style={styles.toggleContainer}>
+          <ThemedText style={styles.toggleLabel}>Dark Mode</ThemedText>
+          <Switch value={isDarkMode} onValueChange={toggleTheme} />
+        </View>
+
         <TouchableOpacity
           style={[
             styles.logoutButton,
@@ -51,6 +64,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     opacity: 0.7,
     marginBottom: 32,
+  },
+  toggleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 32,
+    width: '100%',
+    paddingHorizontal: 20,
+  },
+  toggleLabel: {
+    fontSize: 16,
+    fontWeight: '500',
   },
   logoutButton: {
     paddingHorizontal: 32,
