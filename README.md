@@ -100,10 +100,11 @@ VaultX-qng9Eb/
 ## Screenshots
 
 ### Light Mode
-![Light Mode Screenshot](assets/images/light-mode.png)
+<img width="190" height="460" alt="image" src="https://github.com/user-attachments/assets/40f55642-95be-4fc7-926c-88260444abf9" />
 
 ### Dark Mode
-![Dark Mode Screenshot](assets/images/dark-mode.png)
+<img width="190" height="460" alt="image" src="https://github.com/user-attachments/assets/acf0c2f7-15ed-4b21-9cb5-4cc54962540d" />
+
 
 ---
 
@@ -127,26 +128,6 @@ We welcome contributions! To contribute:
 
 ---
 
-## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
-
-## Contact
-
-For any inquiries or support, please contact:
-- **Email**: support@vaultx.com
-- **Website**: [www.vaultx.com](https://www.vaultx.com)
-
----
-
-## Acknowledgments
-
-- **Expo**: For simplifying React Native development.
-- **Supabase**: For providing an amazing backend-as-a-service platform.
-- **React Native Community**: For the incredible open-source libraries.
-
----
 
 Thank you for using VaultX! 🚀
