@@ -115,7 +115,12 @@ export async function syncDocument(document: LocalDocument): Promise<boolean> {
 
   try {
     // Get current user
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    
+    if (sessionError) {
+      console.log('Session error:', sessionError);
+      return false;
+    }
     
     if (!session?.user) {
       console.log('No active session, skipping sync');
@@ -124,12 +129,18 @@ export async function syncDocument(document: LocalDocument): Promise<boolean> {
 
     const userId = session.user.id;
 
+    console.log('Starting sync for document:', document.id);
+    console.log('User ID:', userId);
+    console.log('Local path:', document.local_path);
+
     // Upload file to Supabase Storage
     const { storagePath } = await uploadDocumentToCloud({
       localFilePath: document.local_path,
       userId,
       documentId: document.id,
     });
+
+    console.log('File uploaded, saving metadata...');
 
     // Save metadata to Supabase DB
     await insertCloudDocument({
@@ -141,13 +152,17 @@ export async function syncDocument(document: LocalDocument): Promise<boolean> {
       createdAt: document.created_at,
     });
 
+    console.log('Metadata saved, updating local status...');
+
     // Update local record to mark as synced
     await updateDocumentSyncStatus(document.id, 1);
 
     console.log('Document synced successfully:', document.id);
     return true;
-  } catch (error) {
+  } catch (error: any) {
     // Fail gracefully - don't throw error, leave synced = 0
+    console.error('Failed to sync document:', error);
+    console.error('Error details:', JSON.stringify(error, null, 2));
     console.log('Failed to sync document (offline or error):', error);
     return false;
   }

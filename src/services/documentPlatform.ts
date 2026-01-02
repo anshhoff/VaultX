@@ -46,11 +46,42 @@ export async function getDocuments(): Promise<UnifiedDocument[]> {
       return [];
     }
   } else {
-    // Native: Fetch from local SQLite
+    // Native: Merge local and cloud documents
     try {
-      return await getAllLocalDocuments();
+      const localDocs = await getAllLocalDocuments();
+      
+      // Try to fetch cloud documents
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (session?.user) {
+          const cloudDocs = await getCloudDocuments(session.user.id);
+          
+          // Create a map of local document IDs
+          const localDocIds = new Set(localDocs.map(doc => doc.id));
+          
+          // Add cloud documents that don't exist locally
+          const cloudOnlyDocs = cloudDocs
+            .filter(doc => !localDocIds.has(doc.id))
+            .map((doc: CloudDocument) => ({
+              id: doc.id,
+              name: doc.name,
+              category: doc.category,
+              local_path: doc.storage_path, // Use storage path for cloud-only docs
+              created_at: doc.created_at,
+              synced: 1, // Cloud documents are synced
+            }));
+          
+          // Merge local and cloud-only documents
+          return [...localDocs, ...cloudOnlyDocs].sort((a, b) => b.created_at - a.created_at);
+        }
+      } catch (cloudError) {
+        console.log('Could not fetch cloud documents:', cloudError);
+      }
+      
+      return localDocs;
     } catch (error) {
-      console.error('Error fetching local documents:', error);
+      console.error('Error fetching documents:', error);
       return [];
     }
   }

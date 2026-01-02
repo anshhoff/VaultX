@@ -56,8 +56,15 @@ export default function HomeScreen() {
         const signedUrl = await getDocumentUrl(document.local_path);
         await Linking.openURL(signedUrl);
       } else {
-        // On native, open local file
-        await openDocument(document.local_path);
+        // On native, check if it's a local file or cloud file
+        if (document.local_path.startsWith('file://') || document.local_path.includes('/documents/')) {
+          // Local file
+          await openDocument(document.local_path);
+        } else {
+          // Cloud file - get signed URL
+          const signedUrl = await getDocumentUrl(document.local_path);
+          await Linking.openURL(signedUrl);
+        }
       }
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Failed to open document');
@@ -78,23 +85,41 @@ export default function HomeScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              if (Platform.OS === 'web') {
-                // On web, delete from cloud
-                const { data: { session } } = await supabase.auth.getSession();
-                if (session?.user) {
-                  await deleteCloudDocument(document.id, session.user.id);
-                  // Delete from storage
-                  await supabase.storage.from('documents').remove([document.local_path]);
-                }
-              } else {
-                // On native, delete from local database
-                await deleteDocument(document.id);
-                
+              const { data: { session } } = await supabase.auth.getSession();
+              
+              if (!session?.user) {
+                Alert.alert('Error', 'Not authenticated');
+                return;
+              }
+
+              const userId = session.user.id;
+              const isLocalFile = Platform.OS !== 'web' && 
+                                 (document.local_path.startsWith('file://') || 
+                                  document.local_path.includes('/documents/'));
+
+              if (isLocalFile) {
                 // Delete local file
                 try {
                   await FileSystem.deleteAsync(document.local_path);
                 } catch (fileError) {
                   console.warn('Could not delete local file:', fileError);
+                }
+                
+                // Delete from local database
+                await deleteDocument(document.id);
+              }
+
+              // Delete from cloud (if synced)
+              if (document.synced === 1) {
+                try {
+                  await deleteCloudDocument(document.id, userId);
+                  // Delete from storage
+                  const storagePath = isLocalFile ? 
+                    `${userId}/${document.id}.${document.name.split('.').pop()}` : 
+                    document.local_path;
+                  await supabase.storage.from('documents').remove([storagePath]);
+                } catch (cloudError) {
+                  console.warn('Could not delete from cloud:', cloudError);
                 }
               }
               

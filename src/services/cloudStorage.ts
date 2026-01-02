@@ -23,10 +23,22 @@ export async function uploadDocumentToCloud(
   const { localFilePath, userId, documentId } = params;
 
   try {
+    // Verify session before upload
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    
+    if (sessionError || !session) {
+      throw new Error('Not authenticated. Please log in again.');
+    }
+
+    console.log('Uploading document for user:', userId);
+    console.log('Local file path:', localFilePath);
+
     // Read the file as base64
     const fileBase64 = await FileSystem.readAsStringAsync(localFilePath, {
       encoding: FileSystem.EncodingType.Base64,
     });
+
+    console.log('File read successfully, size:', fileBase64.length);
 
     // Convert base64 to array buffer for upload
     const arrayBuffer = base64.decode(fileBase64);
@@ -38,15 +50,18 @@ export async function uploadDocumentToCloud(
     // Construct storage path: userId/documentId.extension
     const storagePath = `${userId}/${documentId}.${fileExtension}`;
 
-    // Upload to Supabase Storage
+    console.log('Uploading to storage path:', storagePath);
+
+    // Upload to Supabase Storage (upsert to handle existing files)
     const { data, error } = await supabase.storage
       .from('documents')
       .upload(storagePath, arrayBuffer, {
         contentType: getContentType(fileExtension),
-        upsert: false,
+        upsert: true,
       });
 
     if (error) {
+      console.error('Upload error details:', error);
       throw new Error(`Upload failed: ${error.message}`);
     }
 
@@ -54,6 +69,7 @@ export async function uploadDocumentToCloud(
       throw new Error('Upload failed: No data returned');
     }
 
+    console.log('Upload successful:', data.path);
     return { storagePath: data.path };
   } catch (error: any) {
     console.error('Error uploading document to cloud:', error);

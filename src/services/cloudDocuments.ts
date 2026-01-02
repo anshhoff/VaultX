@@ -19,7 +19,7 @@ interface InsertDocumentParams {
 }
 
 /**
- * Insert document metadata into Supabase
+ * Insert document metadata into Supabase (upsert to handle duplicates)
  * @param params - Document metadata parameters
  */
 export async function insertCloudDocument(
@@ -30,13 +30,15 @@ export async function insertCloudDocument(
   try {
     const { error } = await supabase
       .from('documents')
-      .insert({
+      .upsert({
         id,
         user_id: userId,
         name,
         category,
         storage_path: storagePath,
         created_at: createdAt,
+      }, {
+        onConflict: 'id',
       });
 
     if (error) {
